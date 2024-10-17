@@ -9,5 +9,5 @@ def is_valid(value: str)->str:
 print(is_valid("('()')"))
 print(is_valid("('{}')"))
 print(is_valid("('[]')"))
-print(is_valid("({[]}"))
+print(is_valid("(99{[]}"))
 print(is_valid("({]}"))

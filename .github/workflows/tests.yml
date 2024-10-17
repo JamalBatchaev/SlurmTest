@@ -10,6 +10,16 @@ on:
 
 # выполняемые действия
 jobs:
-
-       name: Test_MyRange🔧
-       run: python -m coverage run -m  pytest C:\Users\batch\GIT\SlurmTest\Tasks_4\test_myRange.py
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v1
+      with:
+        python-version: '3.8'
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Run Makefile test
+      run: make test
