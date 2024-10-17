@@ -1,0 +1,15 @@
+# название
+name: AutomationTest
+
+# целевые события для запуска
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+# выполняемые действия
+jobs:
+
+       name: Test_MyRange🔧
+       run: python -m coverage run -m  pytest C:\Users\batch\GIT\SlurmTest\Tasks_4\test_myRange.py
