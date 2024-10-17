@@ -1,4 +1,4 @@
-
+#4_2_2
 def matrix (a:int=1, b:int=25)->str:
     
     res_str=''
@@ -13,12 +13,11 @@ def matrix (a:int=1, b:int=25)->str:
         i+=1
         
     return res_str
-print('Построение матрицы 5 x n')
+"""print('Построение матрицы 5 x n')
 print('Введите начало матрицы:')
 a=int(input())
 print('Введите конец матрицы:')
 b=int(input())
-print (matrix(a,b))
-
+print (matrix(a,b))"""
 
 
