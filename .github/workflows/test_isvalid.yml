@@ -23,7 +23,7 @@ jobs:
           pip install coverage
       - name: Test with pytest
         run: |
-          coverage run -m pytest  .\Tasks_4\test_isvalid_pytest.py
+          coverage run -m pytest  Tasks_4/test_isvalid_pytest.py
       - name: Generate Coverage Report
         run: |
           coverage report -m
