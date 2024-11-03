@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QPointF
+from PyQt5.QtCore import QPointF, QPoint
 from PyQt5.QtGui import QPolygonF
 from typing import List
 from knot import Knot
@@ -14,6 +14,12 @@ class Spline:
     def get_knots(self) -> List[Knot]:
         return self.knots
     
+    def set_current_knot (self, index: int, value: Knot):
+        if not self.knots:
+            return
+        self.knots[index]=value
+        self.curve=None
+
     def get_curve(self) -> QPolygonF:
         if self.curve is None:
             self._interpolate()
@@ -23,6 +29,13 @@ class Spline:
     def add_knot(self, pos) -> None:
         self.knots.append(Knot(QPointF(pos)))
         self.curve = None
+    
+    def get_knot_by_pos(self, pos:QPoint)->int:
+        for index, knot in enumerate(self.knots):
+            if (knot.pos-pos).manhattanLength()<8:
+                return index
+
+
 
 
     def _interpolate(self) -> QPolygonF:
