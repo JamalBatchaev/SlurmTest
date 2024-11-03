@@ -9,5 +9,7 @@ if __name__=='__main__':
     main_window.setWindowTitle('Spline Editor')
     with open('dark.qss', 'r', encoding='utf-8') as style_sheet_file:
         main_window.setStyleSheet(style_sheet_file.read())
+
+    
     sys.exit(app.exec())
 

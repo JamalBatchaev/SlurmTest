@@ -1,3 +1,4 @@
+
 from PyQt5.QtWidgets import  QMainWindow, QWidget, QMessageBox
 from spline_view import SplineWiev
 from control_panel import ControlPanel
@@ -5,6 +6,7 @@ from dialogs import Dialog
 from PyQt5.QtGui import QPalette
 
 class MainWindow(QMainWindow):
+    
     def __init__(self, parent= None):
         super().__init__(parent)
         menubar=self.menuBar()
@@ -27,6 +29,6 @@ class MainWindow(QMainWindow):
     
     def on_about_clicked(self):
         alert = QMessageBox()
-        alert.setStyleSheet("color: #d1fa78; background-color: #1e1d23")
+        alert.setStyleSheet(self.styleSheet())
         alert.setText('Spline Editor v1.0 Author: Dzhamal Batchaev')
         alert.exec()
