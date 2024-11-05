@@ -41,17 +41,11 @@ class SplineWiev(QWidget):
         else:
             self.spline.add_knot(event.pos())
             self.cur_knot_index=len(self.spline.get_knots())-1
+            #Добавление записи в Spline History
+            self.spline_hist.add_spline_view(self.spline)
 
 
         self.current_knot_changed.emit(self.spline.get_knots()[self.cur_knot_index])
-
-        #Добавление записи в Spline History
-        self.spline_hist.add_spline_view(self.spline)
-        self.spline_index=self.spline_hist.index
-        self.spline=self.spline_hist.splines[self.spline_index]
-        
-
-
         self.update()
         return super().mousePressEvent(event)
 
@@ -74,6 +68,5 @@ class SplineWiev(QWidget):
         self.spline_index=self.spline_hist.index
         self.spline=self.spline_hist.splines[self.spline_index]
         self.update()
-        #i=self.spline_hist.index
-        #print(f'spline n {i} = {self.spline_hist.splines[i]}')
+
         
