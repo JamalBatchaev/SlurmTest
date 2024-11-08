@@ -1,8 +1,9 @@
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import  QMainWindow, QWidget, QMessageBox, QFileDialog
-from spline_view import SplineWiev
+from spline_view import SplineView
 from control_panel import ControlPanel
 from dialogs import Dialog
-from PyQt5.QtGui import QPalette, QKeySequence
+from PyQt5.QtGui import QKeyEvent, QPalette, QKeySequence
 import pickle
 
 
@@ -29,14 +30,12 @@ class MainWindow(QMainWindow):
         open_action=file_menu.addAction('Open')
         open_action.setShortcut(QKeySequence("Ctrl+O"))
         open_action.triggered.connect(self.dialog_open)
-
         #раздел меню About
         about_menu=menubar.addMenu('&About')
         about_menu.aboutToShow.connect(self.on_about_clicked)
         
         #объявление сплайна
-        self.spline_view=SplineWiev()
-
+        self.spline_view=SplineView()
         #раздел меню Edit
         edit_menu=menubar.addMenu('&Edit')
 
@@ -89,5 +88,14 @@ class MainWindow(QMainWindow):
             self.spline_view.spline.knots = pickle.load(f)
             #повторная прорисовка сплайна по загруженным точкам
             self.spline_view.spline._interpolate()
-
-
+    
+    #отработка нажатия Shift для перетаскивания узлов сплайна
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Shift:
+            self.spline_view.shift_clicked=True
+        return super().keyPressEvent(event)
+    
+    def keyReleaseEvent(self, event):
+        if event.key() == Qt.Key_Shift:
+            self.spline_view.shift_clicked=False
+        return super().keyReleaseEvent(event)

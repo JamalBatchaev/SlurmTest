@@ -1,11 +1,11 @@
-from PyQt5.QtCore import Qt, pyqtSignal, QEvent
+from PyQt5.QtCore import Qt, pyqtSignal, QEvent,QPointF
 from PyQt5.QtWidgets import  QWidget
 from PyQt5.QtGui import QMouseEvent, QPainter,  QPalette, QPen, QBrush
 from spline import Spline
 from knot import Knot
 from spline_history import SplineHistory
 
-class SplineWiev(QWidget):
+class SplineView(QWidget):
 
     current_knot_changed=pyqtSignal(Knot)
 
@@ -15,8 +15,10 @@ class SplineWiev(QWidget):
         self.cur_knot_index=None
         self.spline_hist=SplineHistory()
         self.spline_index=None
+        self.mouse_clicked=False
+        self.shift_clicked=False
+
         
-    
     def paintEvent(self, event) -> None:
         bg_color=self.palette().color(QPalette.Base)
         curve_color=self.palette().color(QPalette.Foreground)
@@ -44,6 +46,7 @@ class SplineWiev(QWidget):
                 self.spline_hist.add_spline_view(self.spline)
         #Добавление/выбор узла при нажатии левой кнопки мыши
         elif event.button()==Qt.LeftButton:
+            self.mouse_clicked=True
             if index is not None:
                 self.cur_knot_index=index
             else:
@@ -57,8 +60,25 @@ class SplineWiev(QWidget):
             
         self.update()
         return super().mousePressEvent(event)
-
-
+    
+    #отработка удерживания левой кнопки мыши для перетаскивания узлов
+    def mouseMoveEvent(self, event:QMouseEvent):
+        if self.mouse_clicked and self.shift_clicked:
+            index=self.spline.get_knot_by_pos(event.pos())
+            if index:
+                self.spline.knots[index].pos=event.pos()
+                self.spline._interpolate()
+             
+        self.update()
+        return super().mouseMoveEvent(event)
+    
+    #отработка отжатия левой кнопки мыши
+    def mouseReleaseEvent(self, event:QMouseEvent):
+        if event.button()==Qt.LeftButton:
+            self.mouse_clicked=False
+        self.update()
+        return super().mouseReleaseEvent(event)
+    
     def set_current_knot(self,  value: Knot):
         self.spline.set_current_knot(self.cur_knot_index, value)
         self.update()
@@ -70,12 +90,9 @@ class SplineWiev(QWidget):
         self.spline=self.spline_hist.splines[self.spline_index]
         self.update()
 
-
     #Отработка нажатия Redo
     def redo_spline_click(self):
         self.spline_hist.redo_spline()
         self.spline_index=self.spline_hist.index
         self.spline=self.spline_hist.splines[self.spline_index]
         self.update()
-
-        
