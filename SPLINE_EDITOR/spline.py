@@ -30,6 +30,11 @@ class Spline:
         self.knots.append(Knot(QPointF(pos)))
         self.curve = None
     
+    #удаление узла
+    def delete_knot(self, index: int) -> None:
+        self.knots.pop(index)
+        self.curve = None
+    
     def get_knot_by_pos(self, pos:QPoint)->int:
         for index, knot in enumerate(self.knots):
             if (knot.pos-pos).manhattanLength()<8:

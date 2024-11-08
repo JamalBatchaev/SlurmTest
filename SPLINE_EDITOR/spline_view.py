@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, QEvent
 from PyQt5.QtWidgets import  QWidget
 from PyQt5.QtGui import QMouseEvent, QPainter,  QPalette, QPen, QBrush
 from spline import Spline
@@ -15,6 +15,7 @@ class SplineWiev(QWidget):
         self.cur_knot_index=None
         self.spline_hist=SplineHistory()
         self.spline_index=None
+        
     
     def paintEvent(self, event) -> None:
         bg_color=self.palette().color(QPalette.Base)
@@ -34,18 +35,26 @@ class SplineWiev(QWidget):
 
         return super().paintEvent(event)
     
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event:QMouseEvent):
         index=self.spline.get_knot_by_pos(event.pos())
-        if index is not None:
-            self.cur_knot_index=index
-        else:
-            self.spline.add_knot(event.pos())
-            self.cur_knot_index=len(self.spline.get_knots())-1
-            #Добавление записи в Spline History
-            self.spline_hist.add_spline_view(self.spline)
-
-
-        self.current_knot_changed.emit(self.spline.get_knots()[self.cur_knot_index])
+        #Удаление узла при нажатии правой кнопки мыши
+        if event.button()==Qt.RightButton:
+            if index:
+                self.spline.delete_knot(index)
+                self.spline_hist.add_spline_view(self.spline)
+        #Добавление/выбор узла при нажатии левой кнопки мыши
+        elif event.button()==Qt.LeftButton:
+            if index is not None:
+                self.cur_knot_index=index
+            else:
+                self.spline.add_knot(event.pos())
+                self.cur_knot_index=len(self.spline.get_knots())-1
+                #Добавление записи в Spline History
+                self.spline_hist.add_spline_view(self.spline)
+            
+        
+            self.current_knot_changed.emit(self.spline.get_knots()[self.cur_knot_index])
+            
         self.update()
         return super().mousePressEvent(event)
 
