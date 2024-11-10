@@ -12,7 +12,10 @@ class MainWindow(QMainWindow):
         super().__init__(parent)
         menubar=self.menuBar()
         menubar.setFocus()
-
+        
+        #объявление сплайна
+        self.spline_view=SplineView()
+        
         #раздел меню File
         file_menu=menubar.addMenu('&File')
 
@@ -29,12 +32,7 @@ class MainWindow(QMainWindow):
         open_action=file_menu.addAction('Open')
         open_action.setShortcut(QKeySequence("Ctrl+O"))
         open_action.triggered.connect(self.dialog_open)
-        #раздел меню About
-        about_menu=menubar.addMenu('&About')
-        about_menu.aboutToShow.connect(self.on_about_clicked)
-        
-        #объявление сплайна
-        self.spline_view=SplineView()
+
         #раздел меню Edit
         edit_menu=menubar.addMenu('&Edit')
 
@@ -47,12 +45,18 @@ class MainWindow(QMainWindow):
         redo_action=edit_menu.addAction('Redo')
         redo_action.setShortcut(QKeySequence("Shift+Ctrl+Z"))
         redo_action.triggered.connect(self.spline_view.redo_spline_click)
+        
+        #раздел меню About
+        about_menu=menubar.addMenu('&About')
+        about_menu.aboutToShow.connect(self.on_about_clicked)
 
         #отображение сплайна
         self.setCentralWidget(self.spline_view)
         control_panel=ControlPanel(self.spline_view.maximumWidth(), self.spline_view.maximumHeight())
         self.statusBar().addWidget(control_panel)
         control_panel.state_changed.connect(self.spline_view.set_current_knot)
+        #передача сигнала об изменении типа линии
+        control_panel.line_changed.connect(self.spline_view.redraw_changed_line)
         self.spline_view.current_knot_changed.connect(control_panel.set_state)
         
 

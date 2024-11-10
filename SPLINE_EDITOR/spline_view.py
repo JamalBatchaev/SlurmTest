@@ -4,11 +4,12 @@ from PyQt5.QtGui import QMouseEvent, QPainter,  QPalette, QPen, QBrush
 from spline import Spline
 from knot import Knot
 from spline_history import SplineHistory
-from polyline import Polyline
+from control_panel import ControlPanel
 
 class SplineView(QWidget):
 
     current_knot_changed=pyqtSignal(Knot)
+
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -18,6 +19,7 @@ class SplineView(QWidget):
         self.spline_index=None
         self.mouse_clicked=False
         self.shift_clicked=False
+        self.current_line_type='Kochanek–Bartels'
 
         
     def paintEvent(self, event) -> None:
@@ -27,7 +29,13 @@ class SplineView(QWidget):
         painter.fillRect(self.rect(), bg_color)
         painter.setPen(QPen(curve_color, 3, Qt.SolidLine))
         painter.setRenderHints(QPainter.HighQualityAntialiasing)
-        painter.drawPolyline(self.spline.get_curve())
+
+        #отрисовка изменения типа линии
+        if self.current_line_type=='Kochanek–Bartels':
+            painter.drawPolyline(self.spline.get_curve())
+        elif self.current_line_type=='Polyline':
+            painter.drawPolyline(self.spline.get_curve_polyline())
+
         painter.setBrush(QBrush(curve_color, Qt.SolidPattern))
         for index, knot in enumerate(self.spline.get_knots()):
             radius=6 if self.cur_knot_index==index else 4
@@ -100,4 +108,9 @@ class SplineView(QWidget):
         self.spline_hist.redo_spline()
         self.spline_index=self.spline_hist.index
         self.spline=self.spline_hist.splines[self.spline_index]
+        self.update()
+    #обработка изменения типа линии
+    def redraw_changed_line(self, value: str):
+        self.current_line_type=value
+        self.paintEvent
         self.update()

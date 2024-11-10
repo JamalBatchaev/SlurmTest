@@ -24,6 +24,10 @@ class Spline:
         if self.curve is None:
             self.interpolate()
         return self.curve or QPolygonF()
+    
+    def get_curve_polyline(self) -> QPolygonF:
+        points=[knot.pos for knot in self.knots]
+        return QPolygonF(points)
 
 
     def add_knot(self, pos) -> None:

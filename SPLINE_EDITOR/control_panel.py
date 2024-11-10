@@ -5,6 +5,9 @@ from knot import Knot
 
 class ControlPanel(QWidget):
     state_changed=pyqtSignal(Knot)
+    #сигнал изменения типа линии
+    line_changed=pyqtSignal(str)
+
     def __init__(self, width:int, height:int, parent=None):
         super().__init__(parent)
 
@@ -90,8 +93,9 @@ class ControlPanel(QWidget):
         self.t_spinbox.setValue(value.tension)
         self.b_spinbox.setValue(value.bias)
         self.c_spinbox.setValue(value.continuity)
-
+    
+    #переключение типа линии
     def on_activated (self, idx):
         self.current_line=self.line_types[idx]
-        print ( self.current_line)
+        self.line_changed.emit(self.current_line)
     
