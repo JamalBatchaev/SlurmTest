@@ -1,9 +1,8 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import  QMainWindow, QWidget, QMessageBox, QFileDialog
+from PyQt5.QtWidgets import  QMainWindow,  QMessageBox, QFileDialog
 from spline_view import SplineView
 from control_panel import ControlPanel
-from dialogs import Dialog
-from PyQt5.QtGui import QKeyEvent, QPalette, QKeySequence
+from PyQt5.QtGui import  QKeySequence
 import pickle
 
 
@@ -55,7 +54,7 @@ class MainWindow(QMainWindow):
         self.statusBar().addWidget(control_panel)
         control_panel.state_changed.connect(self.spline_view.set_current_knot)
         self.spline_view.current_knot_changed.connect(control_panel.set_state)
-
+        
 
 
 
@@ -87,7 +86,7 @@ class MainWindow(QMainWindow):
         with f:
             self.spline_view.spline.knots = pickle.load(f)
             #повторная прорисовка сплайна по загруженным точкам
-            self.spline_view.spline._interpolate()
+            self.spline_view.spline.interpolate()
     
     #отработка нажатия Shift для перетаскивания узлов сплайна
     def keyPressEvent(self, event):

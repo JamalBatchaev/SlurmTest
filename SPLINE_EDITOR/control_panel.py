@@ -1,5 +1,4 @@
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import  QWidget, QHBoxLayout, QSpinBox, QDoubleSpinBox
+from PyQt5.QtWidgets import  QWidget, QHBoxLayout, QSpinBox, QDoubleSpinBox, QComboBox
 from PyQt5.QtCore import QPointF, pyqtSignal
 from knot import Knot
 
@@ -10,6 +9,8 @@ class ControlPanel(QWidget):
         super().__init__(parent)
 
         self.state=Knot(QPointF(0, 0))
+        self.line_types = ['Kochanek–Bartels', 'Polyline']
+        self.current_line='Kochanek–Bartels'
 
         layout=QHBoxLayout()
         self.x_spinbox=QSpinBox()
@@ -41,7 +42,14 @@ class ControlPanel(QWidget):
         self.t_spinbox=create_spinbox('T = ', -1000, 1000, self.set_tension)
         self.b_spinbox=create_spinbox('B = ', -1000, 1000, self.set_bias)
         self.c_spinbox=create_spinbox('C = ', -1000, 1000, self.set_continuity)
-
+        
+        #Добавление выбора типа линии
+        self.combobox = QComboBox()
+        for line_type in self.line_types:
+            self.combobox.addItem(line_type)
+        self.combobox.activated.connect(self.on_activated)
+        layout.addWidget(self.combobox)
+ 
         self.setLayout(layout)
 
 
@@ -82,3 +90,8 @@ class ControlPanel(QWidget):
         self.t_spinbox.setValue(value.tension)
         self.b_spinbox.setValue(value.bias)
         self.c_spinbox.setValue(value.continuity)
+
+    def on_activated (self, idx):
+        self.current_line=self.line_types[idx]
+        print ( self.current_line)
+    

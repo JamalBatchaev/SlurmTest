@@ -1,9 +1,10 @@
-from PyQt5.QtCore import Qt, pyqtSignal, QEvent,QPointF
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import  QWidget
 from PyQt5.QtGui import QMouseEvent, QPainter,  QPalette, QPen, QBrush
 from spline import Spline
 from knot import Knot
 from spline_history import SplineHistory
+from polyline import Polyline
 
 class SplineView(QWidget):
 
@@ -27,7 +28,6 @@ class SplineView(QWidget):
         painter.setPen(QPen(curve_color, 3, Qt.SolidLine))
         painter.setRenderHints(QPainter.HighQualityAntialiasing)
         painter.drawPolyline(self.spline.get_curve())
-
         painter.setBrush(QBrush(curve_color, Qt.SolidPattern))
         for index, knot in enumerate(self.spline.get_knots()):
             radius=6 if self.cur_knot_index==index else 4
@@ -72,7 +72,7 @@ class SplineView(QWidget):
             index=self.spline.get_knot_by_pos(event.pos())
             if index:
                 self.spline.knots[index].pos=event.pos()
-                self.spline._interpolate()
+                self.spline.interpolate()
              
         self.update()
         return super().mouseMoveEvent(event)

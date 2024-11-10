@@ -1,6 +1,5 @@
 from spline import Spline
 import copy
-import pickle
 
 
 class SplineHistory():

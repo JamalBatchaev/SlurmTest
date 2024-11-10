@@ -1,58 +1,51 @@
 from PyQt5.QtCore import QPointF, QPoint
-from PyQt5.QtGui import QPolygonF
 from typing import List
 from knot import Knot
 
-class Spline:
+class Polyline:
     def __init__(self) -> None:
         self.knots: List[Knot] = []
-        self.curve = None
+        self.line_segments = []  # Список для хранения линий
         self.subdivs = 40
         self.uStep = 1.0 / self.subdivs
-
 
     def get_knots(self) -> List[Knot]:
         return self.knots
     
-    def set_current_knot (self, index: int, value: Knot):
+    def set_current_knot(self, index: int, value: Knot):
         if not self.knots:
             return
-        self.knots[index]=value
-        self.curve=None
+        self.knots[index] = value
+        self.line_segments = []  # Обнуляем линии
+        self.interpolate()
 
-    def get_curve(self) -> QPolygonF:
-        if self.curve is None:
+    def get_curve(self) -> List[QPointF]:
+        if not self.line_segments:
             self.interpolate()
-        return self.curve or QPolygonF()
-
-
+        return self.line_segments
+    
     def add_knot(self, pos) -> None:
         self.knots.append(Knot(QPointF(pos)))
-        self.curve = None
+        self.line_segments = []  # Обнуляем линии
     
-    #добавление нового узла после выбранного узла
-    def insert_knot(self, index:int, pos) -> None:
+    def insert_knot(self, index: int, pos) -> None:
         self.knots.insert(index, Knot(QPointF(pos)))
-        self.curve = None
+        self.line_segments = []  # Обнуляем линии
     
-    #удаление узла
     def delete_knot(self, index: int) -> None:
         self.knots.pop(index)
-        self.curve = None
+        self.line_segments = []  # Обнуляем линии
     
-    def get_knot_by_pos(self, pos:QPoint)->int:
+    def get_knot_by_pos(self, pos: QPoint) -> int:
         for index, knot in enumerate(self.knots):
-            if (knot.pos-pos).manhattanLength()<8:
+            if (knot.pos - pos).manhattanLength() < 8:
                 return index
 
-
-
-
-    def interpolate(self) -> QPolygonF:
+    def interpolate(self) -> None:
         if len(self.knots) < 2:
             return
 
-        self.curve = QPolygonF()
+        self.line_segments = []  # Сбрасываем линии
 
         for k in range(len(self.knots) - 1):
             prev: Knot = self.knots[k] if k == 0 else self.knots[k - 1]
@@ -93,13 +86,13 @@ class Spline:
                 u2 = u * u
                 u3 = u * u * u
                 
-                self.curve.append(
+                point = (
                     (2 * u3 - 3 * u2 + 1) * cur.pos
                     + (-2 * u3 + 3 * u2) * next1.pos
                     + (u3 - 2 * u2 + u) * d0
                     + (u3 - u2) * d1
                 )
+                self.line_segments.append(point)
                 u += self.uStep
 
-        self.curve.append(self.knots[-1].pos)
-
+        self.line_segments.append(self.knots[-1].pos)
