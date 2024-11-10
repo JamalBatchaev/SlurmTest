@@ -30,6 +30,11 @@ class Spline:
         self.knots.append(Knot(QPointF(pos)))
         self.curve = None
     
+    #добавление нового узла после выбранного узла
+    def insert_knot(self, index:int, pos) -> None:
+        self.knots.insert(index, Knot(QPointF(pos)))
+        self.curve = None
+    
     #удаление узла
     def delete_knot(self, index: int) -> None:
         self.knots.pop(index)

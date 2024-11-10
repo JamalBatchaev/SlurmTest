@@ -12,7 +12,7 @@ class SplineView(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.spline=Spline()
-        self.cur_knot_index=None
+        self.cur_knot_index=0
         self.spline_hist=SplineHistory()
         self.spline_index=None
         self.mouse_clicked=False
@@ -24,13 +24,13 @@ class SplineView(QWidget):
         curve_color=self.palette().color(QPalette.Foreground)
         painter=QPainter(self)
         painter.fillRect(self.rect(), bg_color)
-        painter.setPen(QPen(curve_color, 2, Qt.SolidLine))
+        painter.setPen(QPen(curve_color, 3, Qt.SolidLine))
         painter.setRenderHints(QPainter.HighQualityAntialiasing)
         painter.drawPolyline(self.spline.get_curve())
 
         painter.setBrush(QBrush(curve_color, Qt.SolidPattern))
         for index, knot in enumerate(self.spline.get_knots()):
-            radius=6 if self.cur_knot_index==index else 3
+            radius=6 if self.cur_knot_index==index else 4
             painter.drawEllipse(knot.pos, radius, radius)
         
 
@@ -47,11 +47,16 @@ class SplineView(QWidget):
         #Добавление/выбор узла при нажатии левой кнопки мыши
         elif event.button()==Qt.LeftButton:
             self.mouse_clicked=True
+            #выбор узла
             if index is not None:
                 self.cur_knot_index=index
+            #добавление нового узла после выбранного 
             else:
-                self.spline.add_knot(event.pos())
-                self.cur_knot_index=len(self.spline.get_knots())-1
+                if  self.cur_knot_index<len(self.spline.get_knots())-1:
+                    self.spline.insert_knot(self.cur_knot_index+1, event.pos())
+                else:
+                    self.spline.add_knot(event.pos())
+                    self.cur_knot_index=len(self.spline.get_knots())-1
                 #Добавление записи в Spline History
                 self.spline_hist.add_spline_view(self.spline)
             
