@@ -120,7 +120,7 @@ class MainWindow(QMainWindow):
             with open('light.qss', 'r', encoding='utf-8') as style_sheet_file:
                 self.setStyleSheet(style_sheet_file.read())
             self.current_theme='dark'
-        elif self.current_theme=='dark':
+        else:
             with open('dark.qss', 'r', encoding='utf-8') as style_sheet_file:
                 self.setStyleSheet(style_sheet_file.read())
             self.current_theme='light'
