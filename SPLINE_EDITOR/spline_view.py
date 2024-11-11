@@ -63,11 +63,7 @@ class SplineView(QWidget):
                     self.spline.insert_knot(self.cur_knot_index+1, event.pos())
                 else:
                     self.spline.add_knot(event.pos())
-                    self.cur_knot_index=len(self.spline.get_knots())-1
-                #Добавление записи в Spline History
-                self.spline_hist.add_spline_view(self.spline)
-            
-        
+                    self.cur_knot_index=len(self.spline.get_knots())-1        
             self.current_knot_changed.emit(self.spline.get_knots()[self.cur_knot_index])
             
         self.update()
@@ -88,9 +84,11 @@ class SplineView(QWidget):
     def mouseReleaseEvent(self, event:QMouseEvent):
         if event.button()==Qt.LeftButton:
             self.mouse_clicked=False
-        self.update()
+            self.current_knot_changed.emit(self.spline.get_knots()[self.cur_knot_index])
+            self.set_current_knot(self.spline.get_knots()[self.cur_knot_index])
+            self.update()
         return super().mouseReleaseEvent(event)
-    
+    #установка текущего узла
     def set_current_knot(self,  value: Knot):
         self.spline.set_current_knot(self.cur_knot_index, value)
         self.spline_hist.add_spline_view(self.spline)
