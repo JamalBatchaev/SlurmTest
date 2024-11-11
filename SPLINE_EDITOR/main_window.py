@@ -10,14 +10,14 @@ class MainWindow(QMainWindow):
     
     def __init__(self, parent= None):
         super().__init__(parent)
-        menubar=self.menuBar()
-        menubar.setFocus()
+        self.menubar=self.menuBar()
+        self.menubar.setFocus()
         
         #объявление сплайна
         self.spline_view=SplineView()
-        
+        self.style_sheet_file=open('light.qss', 'r', encoding='utf-8')
         #раздел меню File
-        file_menu=menubar.addMenu('&File')
+        file_menu=self.menubar.addMenu('&File')
 
         #пункт меню file->close
         close_action=file_menu.addAction('Close')
@@ -34,7 +34,7 @@ class MainWindow(QMainWindow):
         open_action.triggered.connect(self.dialog_open)
 
         #раздел меню Edit
-        edit_menu=menubar.addMenu('&Edit')
+        edit_menu=self.menubar.addMenu('&Edit')
 
         #пункт меню edit->undo
         undo_action=edit_menu.addAction('Undo')
@@ -45,23 +45,26 @@ class MainWindow(QMainWindow):
         redo_action=edit_menu.addAction('Redo')
         redo_action.setShortcut(QKeySequence("Shift+Ctrl+Z"))
         redo_action.triggered.connect(self.spline_view.redo_spline_click)
-        
+
         #раздел меню About
-        about_menu=menubar.addMenu('&About')
+        about_menu=self.menubar.addMenu('&About')
         about_menu.aboutToShow.connect(self.on_about_clicked)
 
         #отображение сплайна
         self.setCentralWidget(self.spline_view)
         control_panel=ControlPanel(self.spline_view.maximumWidth(), self.spline_view.maximumHeight())
+        control_panel.setFocusPolicy(Qt.NoFocus)
         self.statusBar().addWidget(control_panel)
         control_panel.state_changed.connect(self.spline_view.set_current_knot)
+        control_panel.state_changed.connect(self.set_focus)
         #передача сигнала об изменении типа линии
         control_panel.line_changed.connect(self.spline_view.redraw_changed_line)
         self.spline_view.current_knot_changed.connect(control_panel.set_state)
         
 
-
-
+    
+    def set_focus(self):
+        self.menubar.setFocus()
 
     #вызов окна About
     def on_about_clicked(self):
@@ -102,3 +105,4 @@ class MainWindow(QMainWindow):
         if event.key() == Qt.Key_Shift:
             self.spline_view.shift_clicked=False
         return super().keyReleaseEvent(event)
+    

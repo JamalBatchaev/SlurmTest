@@ -20,7 +20,6 @@ class SplineView(QWidget):
         self.mouse_clicked=False
         self.shift_clicked=False
         self.current_line_type='Kochanek–Bartels'
-
         
     def paintEvent(self, event) -> None:
         bg_color=self.palette().color(QPalette.Base)
@@ -94,6 +93,8 @@ class SplineView(QWidget):
     
     def set_current_knot(self,  value: Knot):
         self.spline.set_current_knot(self.cur_knot_index, value)
+        self.spline_hist.add_spline_view(self.spline)
+        self.spline_index=self.spline_hist.index
         self.update()
 
     #Отработка нажатия Undo
@@ -101,6 +102,10 @@ class SplineView(QWidget):
         self.spline_hist.undo_spline()
         self.spline_index=self.spline_hist.index
         self.spline=self.spline_hist.splines[self.spline_index]
+        self.cur_knot_index=self.spline_index
+        if self.cur_knot_index>len(self.spline.get_knots())-1:
+            self.cur_knot_index=len(self.spline.get_knots())-1
+        self.current_knot_changed.emit(self.spline.knots[-1])
         self.update()
 
     #Отработка нажатия Redo
@@ -108,6 +113,10 @@ class SplineView(QWidget):
         self.spline_hist.redo_spline()
         self.spline_index=self.spline_hist.index
         self.spline=self.spline_hist.splines[self.spline_index]
+        self.cur_knot_index=self.spline_index
+        if self.cur_knot_index>len(self.spline.get_knots())-1:
+            self.cur_knot_index=len(self.spline.get_knots())-1
+        self.current_knot_changed.emit(self.spline.knots[-1])
         self.update()
     #обработка изменения типа линии
     def redraw_changed_line(self, value: str):

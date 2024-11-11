@@ -1,3 +1,4 @@
+from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import  QWidget, QHBoxLayout, QSpinBox, QDoubleSpinBox, QComboBox
 from PyQt5.QtCore import QPointF, pyqtSignal
 from knot import Knot
@@ -54,7 +55,6 @@ class ControlPanel(QWidget):
         layout.addWidget(self.combobox)
  
         self.setLayout(layout)
-
 
     def set_x (self, value:float):
         if value==self.state.pos.x():
