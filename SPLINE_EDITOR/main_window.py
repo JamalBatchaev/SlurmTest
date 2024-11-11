@@ -15,7 +15,11 @@ class MainWindow(QMainWindow):
         
         #объявление сплайна
         self.spline_view=SplineView()
-        self.style_sheet_file=open('light.qss', 'r', encoding='utf-8')
+        
+        #объявление текущей темы
+        self.current_theme='light'
+        self.set_style_sheet()
+
         #раздел меню File
         file_menu=self.menubar.addMenu('&File')
 
@@ -46,6 +50,11 @@ class MainWindow(QMainWindow):
         redo_action.setShortcut(QKeySequence("Shift+Ctrl+Z"))
         redo_action.triggered.connect(self.spline_view.redo_spline_click)
 
+        #пункт меню edit->переключение темы
+        style_action=edit_menu.addAction('Change theme')
+        style_action.setShortcut(QKeySequence("Shift+Ctrl+T"))
+        style_action.triggered.connect(self.set_style_sheet)
+
         #раздел меню About
         about_menu=self.menubar.addMenu('&About')
         about_menu.aboutToShow.connect(self.on_about_clicked)
@@ -53,7 +62,6 @@ class MainWindow(QMainWindow):
         #отображение сплайна
         self.setCentralWidget(self.spline_view)
         control_panel=ControlPanel(self.spline_view.maximumWidth(), self.spline_view.maximumHeight())
-        control_panel.setFocusPolicy(Qt.NoFocus)
         self.statusBar().addWidget(control_panel)
         control_panel.state_changed.connect(self.spline_view.set_current_knot)
         control_panel.state_changed.connect(self.set_focus)
@@ -62,7 +70,7 @@ class MainWindow(QMainWindow):
         self.spline_view.current_knot_changed.connect(control_panel.set_state)
         
 
-    
+    #фокусировка на меню
     def set_focus(self):
         self.menubar.setFocus()
 
@@ -106,3 +114,14 @@ class MainWindow(QMainWindow):
             self.spline_view.shift_clicked=False
         return super().keyReleaseEvent(event)
     
+    #переключение темы
+    def set_style_sheet(self):
+        if self.current_theme=='light':
+            with open('light.qss', 'r', encoding='utf-8') as style_sheet_file:
+                self.setStyleSheet(style_sheet_file.read())
+            self.current_theme='dark'
+        elif self.current_theme=='dark':
+            with open('dark.qss', 'r', encoding='utf-8') as style_sheet_file:
+                self.setStyleSheet(style_sheet_file.read())
+            self.current_theme='light'
+        self.update()
