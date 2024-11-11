@@ -102,6 +102,7 @@ class MainWindow(QMainWindow):
             self.spline_view.spline.knots = pickle.load(f)
             #повторная прорисовка сплайна по загруженным точкам
             self.spline_view.spline.interpolate()
+            self.update()
     
     #отработка нажатия Shift для перетаскивания узлов сплайна
     def keyPressEvent(self, event):
