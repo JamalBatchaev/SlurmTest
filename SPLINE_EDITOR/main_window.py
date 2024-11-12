@@ -23,9 +23,10 @@ class MainWindow(QMainWindow):
         #раздел меню File
         file_menu=self.menubar.addMenu('&File')
 
-        #пункт меню file->close
-        close_action=file_menu.addAction('Close')
-        close_action.triggered.connect(self.close)
+        #пункт меню file->clear
+        clear_action=file_menu.addAction('Clear')
+        clear_action.setShortcut(QKeySequence("Delete"))
+        clear_action.triggered.connect(self.clear_spline)
 
         #пункт меню file->save
         save_action=file_menu.addAction('Save')
@@ -128,4 +129,9 @@ class MainWindow(QMainWindow):
             with open('diffness.qss', 'r', encoding='utf-8') as style_sheet_file:
                 self.setStyleSheet(style_sheet_file.read())
             self.current_theme='light'
+        self.update()
+    
+    def clear_spline(self):
+        self.spline_view.spline.knots.clear()
+        self.spline_view.spline.curve=None
         self.update()
