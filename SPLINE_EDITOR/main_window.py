@@ -61,13 +61,13 @@ class MainWindow(QMainWindow):
 
         #отображение сплайна
         self.setCentralWidget(self.spline_view)
-        control_panel=ControlPanel(self.spline_view.maximumWidth(), self.spline_view.maximumHeight())
-        self.statusBar().addWidget(control_panel)
-        control_panel.state_changed.connect(self.spline_view.set_current_knot)
-        control_panel.state_changed.connect(self.set_focus)
+        self.control_panel=ControlPanel(self.spline_view.maximumWidth(), self.spline_view.maximumHeight())
+        self.statusBar().addWidget(self.control_panel)
+        self.control_panel.state_changed.connect(self.spline_view.set_current_knot)
+        self.control_panel.state_changed.connect(self.set_focus)
         #передача сигнала об изменении типа линии
-        control_panel.line_changed.connect(self.spline_view.redraw_changed_line)
-        self.spline_view.current_knot_changed.connect(control_panel.set_state)
+        self.control_panel.line_changed.connect(self.spline_view.redraw_changed_line)
+        self.spline_view.current_knot_changed.connect(self.control_panel.set_state)
         
 
     #фокусировка на меню
@@ -100,6 +100,9 @@ class MainWindow(QMainWindow):
 
         with f:
             self.spline_view.spline.knots = pickle.load(f)
+            self.spline_view.cur_knot_index=-1
+            self.spline_view.set_current_knot(self.spline_view.spline.get_knots()[self.spline_view.cur_knot_index])
+            self.spline_view.current_knot_changed.connect(self.control_panel.set_state)
             #повторная прорисовка сплайна по загруженным точкам
             self.spline_view.spline.interpolate()
             self.update()

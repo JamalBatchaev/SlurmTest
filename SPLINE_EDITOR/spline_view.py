@@ -51,6 +51,10 @@ class SplineView(QWidget):
             if index:
                 self.spline.delete_knot(index)
                 self.spline_hist.add_spline_view(self.spline)
+                #if self.cur_knot_index==index:
+                self.cur_knot_index=index-1
+                self.set_current_knot(self.spline.get_knots()[self.cur_knot_index])
+                self.current_knot_changed.emit(self.spline.knots[index-1])
         #Добавление/выбор узла при нажатии левой кнопки мыши
         elif event.button()==Qt.LeftButton:
             self.mouse_clicked=True
@@ -61,10 +65,11 @@ class SplineView(QWidget):
             else:
                 if  self.cur_knot_index<len(self.spline.get_knots())-1:
                     self.spline.insert_knot(self.cur_knot_index+1, event.pos())
+                    self.cur_knot_index+=1
                 else:
                     self.spline.add_knot(event.pos())
                     self.cur_knot_index=len(self.spline.get_knots())-1        
-            self.current_knot_changed.emit(self.spline.get_knots()[self.cur_knot_index])
+            
             
         self.update()
         return super().mousePressEvent(event)
@@ -84,7 +89,6 @@ class SplineView(QWidget):
     def mouseReleaseEvent(self, event:QMouseEvent):
         if event.button()==Qt.LeftButton:
             self.mouse_clicked=False
-            self.current_knot_changed.emit(self.spline.get_knots()[self.cur_knot_index])
             self.set_current_knot(self.spline.get_knots()[self.cur_knot_index])
             self.update()
         return super().mouseReleaseEvent(event)
@@ -93,6 +97,7 @@ class SplineView(QWidget):
         self.spline.set_current_knot(self.cur_knot_index, value)
         self.spline_hist.add_spline_view(self.spline)
         self.spline_index=self.spline_hist.index
+        self.current_knot_changed.emit(self.spline.get_knots()[self.cur_knot_index])
         self.update()
 
     #Отработка нажатия Undo
