@@ -47,12 +47,13 @@ class TableModel(QAbstractTableModel):
         if role != Qt.ItemDataRole.DisplayRole or orientation != Qt.Orientation.Horizontal:
             return QVariant()
         return self.headers[section]  
+    #коммит изменений в бд
     def commit(self):
         session.commit() 
 
 
 app = QApplication([])
-window = QWidget()  # Создаем основное окно
+window = QWidget() 
 layout = QVBoxLayout() 
 
 model = TableModel()
@@ -62,7 +63,7 @@ view.setModel(model)
 
 
 commit_button = QPushButton('Commit')
-commit_button.clicked.connect(model.commit)  # Подключаем кнопку к методу commit
+commit_button.clicked.connect(model.commit)  
 
 # Добавляем представление и кнопку в layout
 layout.addWidget(view)
