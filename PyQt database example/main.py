@@ -19,9 +19,9 @@ class TableModel(QAbstractTableModel):
         if role == Qt.ItemDataRole.EditRole:
             setattr(self.values[index.row()], schema[index.column()], value )
             # Обновление соответствующего поля
-            row_to_update = self.values[index.row()]
-            session.add(row_to_update)
-            session.commit()
+            #row_to_update = self.values[index.row()]
+            #session.add(row_to_update)
+           # session.commit()
             return True 
             
     
@@ -46,15 +46,32 @@ class TableModel(QAbstractTableModel):
     def headerData(self, section, orientation, role):
         if role != Qt.ItemDataRole.DisplayRole or orientation != Qt.Orientation.Horizontal:
             return QVariant()
-        return self.headers[section]
-    
-    
+        return self.headers[section]  
+    def commit(self):
+        session.commit() 
+
+
 app = QApplication([])
+window = QWidget()  # Создаем основное окно
+layout = QVBoxLayout() 
+
 model = TableModel()
 model.setCustomData(projects)
 view = QTableView()
 view.setModel(model)
-view.show()
+
+
+commit_button = QPushButton("Commit")
+commit_button.clicked.connect(model.commit)  # Подключаем кнопку к методу commit
+
+# Добавляем представление и кнопку в layout
+layout.addWidget(view)
+layout.addWidget(commit_button)
+
+# Устанавливаем layout в основное окно
+window.setLayout(layout)
+window.setWindowTitle("My Application")
+window.show()
 app.exec()
     
 
