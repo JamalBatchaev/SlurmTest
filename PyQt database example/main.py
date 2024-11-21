@@ -61,7 +61,7 @@ view = QTableView()
 view.setModel(model)
 
 
-commit_button = QPushButton("Commit")
+commit_button = QPushButton('Commit')
 commit_button.clicked.connect(model.commit)  # Подключаем кнопку к методу commit
 
 # Добавляем представление и кнопку в layout
@@ -70,7 +70,7 @@ layout.addWidget(commit_button)
 
 # Устанавливаем layout в основное окно
 window.setLayout(layout)
-window.setWindowTitle("My Application")
+window.setWindowTitle('Table')
 window.show()
 app.exec()
     
