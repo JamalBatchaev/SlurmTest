@@ -32,12 +32,12 @@ def main():
                         score += 1
                         break
 
-        screen.fill((255, 255, 255))  # Белый фон
+        screen.fill((255, 255, 255)) 
         for shape in shapes:
             shape.move(width, height)
             shape.draw(screen)
 
-        # Отображаем счет
+        
         score_text = font.render(f"Score: {score}", True, (0, 0, 0))
         screen.blit(score_text, (10, 10))
 

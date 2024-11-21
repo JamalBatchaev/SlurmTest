@@ -37,7 +37,6 @@ class Shape:
         elif self.shape_type == 'square':
             return self.x <= pos[0] <= self.x + self.size and self.y <= pos[1] <= self.y + self.size
         elif self.shape_type == 'triangle':
-            # Упрощенная проверка клика на треугольнике
             return (self.x - self.size <= pos[0] <= self.x + self.size) and (self.y - self.size <= pos[1] <= self.y + self.size)
 
 def create_random_shape(width, height):

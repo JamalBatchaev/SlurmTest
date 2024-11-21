@@ -4,6 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+sqlalchemy = "*"
+black = "*"
+pyqt5 = "*"
+pyqt6 = "*"
+psycopg2 = "*"
+flask-sqlalchemy = "*"
 
 [dev-packages]
 
