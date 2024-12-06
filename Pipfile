@@ -12,6 +12,7 @@ psycopg2 = "*"
 flask-sqlalchemy = "*"
 python-dotenv = "*"
 aiogram = "==2.23.1"
+flask = "*"
 
 [dev-packages]
 

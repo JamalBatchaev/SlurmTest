@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Todo List</title>       
+        
+        <link rel="stylesheet" href="https://unpkg.com/purecss@2.1.0/build/pure-min.css" integrity="sha384-yHIFVG6ClnONEA5yB5DJXfW2/KC173DIQrYoZMEtBvGzmf0PKiGyNEqe9N6BNDBH" crossorigin="anonymous">
+    </head>
+    <body>
+        <form id = "TodoListForm" class="pure-form pure-form-aligned" action="add" method="post"> 
+            <fieldset>
+                <legend>TODO List Web App</legend>
+                <div class="pure-control-group">
+                    <label for="task">TODO</label>
+                    <input id="task" name="task" type="text" placeholder="Task" autofocus required> 
+                    <input id="description" name="description" type="text" placeholder="Description">   
+                    <input type="submit" class="pure-button pure-button-primary" name ="add" value="add"/>                         
+                </div>                                        
+            </fieldset>                    
+        </form>
+
+        <table class="pure-table" width="70%" >
+            <thead>
+                <tr><th width="5%">Id</th><th width="35%">Description</th><th width="20%">Status</th><th width="15%">Start time</th><th width="15%">End time</th><th width="10%">Delete task</th></tr>
+            </thead>
+            <tbody>
+                {% for task in tasks%}
+                    <tr>
+                        <td>{{ task.id }}</td>
+                        <td>{{ task.text }}<br>
+                            {% if task.is_descr %}
+                                <a class="pure-button button-description" href="is_descr_show/{{ task.id }}">Сведения ▼<br>{{ task.description }}</a>
+                            {% else %}
+                                <a class="pure-button button-description" href="is_descr_show/{{ task.id }}">Сведения ▶</a>
+                            {% endif %}
+                        </td>
+                        {% if task.is_done %}
+                            <td>Complete<a class="pure-button button-reopen" href="reopen/{{task.id}}"> Reopen</a></td> 
+                            <td>{{task.start_time}}</td>
+                            <td>{{task.end_time}}</td> 
+                        {% else %}
+                            <td>In Progress <a class="pure-button button-done" href="done/{{task.id}}"> Done</a> </td>
+                            <td>{{task.start_time}}</td>
+                            <td></td> 
+                        {% endif %}
+                        <td><a class="pure-button button-delete" href="delete_task/{{task.id}}"> Delete</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <form class="pure-form" action="clear" method="post"> 
+            <fieldset>
+                <div class="pure-controls">    
+                    <style scoped="">          
+                        .button-error { background: rgb(202, 60, 60); } 
+                        .button-done { background: rgb(60, 202, 60); }
+                        .button-reopen { background: rgb(60, 60, 202); } 
+                        .button-description { background: rgb(255, 255, 255); border: none; } 
+                        .button-description:hover { background: rgb(255, 255, 255); border: none; } 
+                        .button-delete { background: rgb(152, 25, 25); }                    
+                    </style>                
+                    <input type="submit" class="pure-button button-error" name ="clear" value="clear"/> 
+                </div>      
+            </fieldset>
+        </form>
+
+        <br><br><br>
+
+    </body>
+</html>
