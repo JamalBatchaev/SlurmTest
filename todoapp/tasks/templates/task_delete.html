@@ -1,0 +1,10 @@
+{% block content %}
+<h2>Удалить задачку</h2>
+<form method="post">
+<div>
+  {% csrf_token %}
+  <p>Вы точно хотите удалить "{{ object }}"?</p>
+  <input type="submit" value="Confirm" />
+</div>
+</form>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% block content%}
+{% for task in object_list %}
+<li>{{task.title}}</li>
+<li>{{task.body}}</li>
+<li>{{task.due_date}}</li>
+<li>{{task.category}}</li>
+</br>
+{% endfor %}
+{% endblock %}
