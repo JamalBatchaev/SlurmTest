@@ -1,9 +1,27 @@
+{% extends "base.html" %}
+ 
+{% block title %}List of tasks{% endblock %}
+ 
 {% block content%}
-{% for task in object_list %}
-<li>{{task.title}}</li>
-<li>{{task.body}}</li>
-<li>{{task.due_date}}</li>
-<li>{{task.category}}</li>
-</br>
-{% endfor %}
+<h2>List of tasks</h2>
+<table>
+    <tr>
+        <th>Title</th>
+        <th>description</th>
+        <th>Due date</th>
+        <th>Category</th>
+        <th>Actions</th>
+    </tr>
+    {% for task in object_list %}
+        <tr>
+            <td>{{ task.title }}</td>
+            <td>{{ task.body }}</td>
+            <td>{{ task.due_date }}</td>
+            <td>{{ task.category }}</td>
+            <td>
+                <a href="/todo/update/{{task.id}}">Update</a>  <a href="/todo/delete/{{task.id}}">Delete</a>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
 {% endblock %}
