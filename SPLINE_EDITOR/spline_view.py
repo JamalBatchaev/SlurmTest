@@ -26,7 +26,7 @@ class SplineView(QWidget):
         curve_color=self.palette().color(QPalette.Foreground)
         painter=QPainter(self)
         painter.fillRect(self.rect(), bg_color)
-        painter.setPen(QPen(curve_color, 3, Qt.SolidLine))
+        painter.setPen(QPen(curve_color, 3/self.scale_factor, Qt.SolidLine))
         painter.setRenderHints(QPainter.HighQualityAntialiasing)
         #изменение масштаба
         transform = QTransform()
@@ -40,11 +40,11 @@ class SplineView(QWidget):
 
         painter.setBrush(QBrush(curve_color, Qt.SolidPattern))
         for index, knot in enumerate(self.spline.get_knots()):
-            radius=6 if self.cur_knot_index==index else 4
+            radius=6/self.scale_factor if self.cur_knot_index==index else 4/self.scale_factor
             painter.drawEllipse(knot.pos, radius, radius)
 
         #отрисовка сетки
-        painter.setPen(QPen(QColor(curve_color), 1, Qt.DotLine)) 
+        painter.setPen(QPen(QColor(curve_color), 0.3/self.scale_factor, Qt.DotLine)) 
         cell_size = 50
         cell_heught=int(self.height()/self.scale_factor)
         cell_width=int(self.width()/self.scale_factor)
@@ -59,13 +59,12 @@ class SplineView(QWidget):
         #учет изменения масштаба
         scaled_pos = event.pos() / self.scale_factor
 
-        index = self.spline.get_knot_by_pos(scaled_pos)
+        index = self.spline.get_knot_by_pos(scaled_pos, self.scale_factor)
         #Удаление узла при нажатии правой кнопки мыши
         if event.button()==Qt.RightButton:
             if index:
                 self.spline.delete_knot(index)
                 self.spline_hist.add_spline_view(self.spline)
-                #if self.cur_knot_index==index:
                 self.cur_knot_index=index-1
                 self.set_current_knot(self.spline.get_knots()[self.cur_knot_index])
                 self.current_knot_changed.emit(self.spline.knots[index-1])
@@ -94,7 +93,7 @@ class SplineView(QWidget):
         scaled_pos = event.pos() / self.scale_factor
 
         if self.mouse_clicked and self.shift_clicked:
-            index=self.spline.get_knot_by_pos(scaled_pos)
+            index=self.spline.get_knot_by_pos(scaled_pos, self.scale_factor)
             if index:
                 self.spline.knots[index].pos=scaled_pos
                 self.spline.interpolate()

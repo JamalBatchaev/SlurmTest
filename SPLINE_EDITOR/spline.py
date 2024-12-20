@@ -44,9 +44,9 @@ class Spline:
         self.knots.pop(index)
         self.curve = None
     
-    def get_knot_by_pos(self, pos:QPoint)->int:
+    def get_knot_by_pos(self, pos:QPoint, scale:float)->int:
         for index, knot in enumerate(self.knots):
-            if (knot.pos-pos).manhattanLength()<8:
+            if (knot.pos-pos).manhattanLength()<8/scale:
                 return index
 
 
