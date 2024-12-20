@@ -1,5 +1,5 @@
 from PyQt5.QtGui import QMouseEvent
-from PyQt5.QtWidgets import  QWidget, QHBoxLayout, QSpinBox, QDoubleSpinBox, QComboBox
+from PyQt5.QtWidgets import  QWidget, QHBoxLayout, QSpinBox, QDoubleSpinBox, QComboBox, QStatusBar
 from PyQt5.QtCore import QPointF, pyqtSignal
 from knot import Knot
 
@@ -53,7 +53,12 @@ class ControlPanel(QWidget):
             self.combobox.addItem(line_type)
         self.combobox.activated.connect(self.on_activated)
         layout.addWidget(self.combobox)
- 
+        
+        #Отображение масштаба
+        self.status_bar = QStatusBar()
+        self.status_bar.showMessage(f"Scale: 1")
+        layout.addWidget(self.status_bar)
+
         self.setLayout(layout)
 
     def set_x (self, value:float):
@@ -98,4 +103,10 @@ class ControlPanel(QWidget):
     def on_activated (self, idx):
         self.current_line=self.line_types[idx]
         self.line_changed.emit(self.current_line)
+    
+    #отображение масштаба
+    def set_scale(self, scale: float):
+        self.status_bar.showMessage(f"Scale: {scale:.2f}")
+
+
     

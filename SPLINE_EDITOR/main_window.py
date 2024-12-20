@@ -15,7 +15,6 @@ class MainWindow(QMainWindow):
         
         #объявление сплайна
         self.spline_view=SplineView()
-        
         #объявление текущей темы
         self.current_theme='light'
         self.set_style_sheet()
@@ -69,6 +68,7 @@ class MainWindow(QMainWindow):
         #передача сигнала об изменении типа линии
         self.control_panel.line_changed.connect(self.spline_view.redraw_changed_line)
         self.spline_view.current_knot_changed.connect(self.control_panel.set_state)
+        self.spline_view.scale_changed.connect(self.control_panel.set_scale)
         
 
     #фокусировка на меню

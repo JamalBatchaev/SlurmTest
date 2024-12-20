@@ -1,15 +1,14 @@
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import  QWidget
-from PyQt5.QtGui import QMouseEvent, QPainter,  QPalette, QPen, QBrush
+from PyQt5.QtGui import QMouseEvent, QPainter,  QPalette, QPen, QBrush, QTransform, QColor
 from spline import Spline
 from knot import Knot
 from spline_history import SplineHistory
-from control_panel import ControlPanel
 
 class SplineView(QWidget):
 
     current_knot_changed=pyqtSignal(Knot)
-
+    scale_changed=pyqtSignal(float)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -20,6 +19,7 @@ class SplineView(QWidget):
         self.mouse_clicked=False
         self.shift_clicked=False
         self.current_line_type='Kochanek–Bartels'
+        self.scale_factor = 1.0  #масштаб
         
     def paintEvent(self, event) -> None:
         bg_color=self.palette().color(QPalette.Base)
@@ -28,7 +28,10 @@ class SplineView(QWidget):
         painter.fillRect(self.rect(), bg_color)
         painter.setPen(QPen(curve_color, 3, Qt.SolidLine))
         painter.setRenderHints(QPainter.HighQualityAntialiasing)
-
+        #изменение масштаба
+        transform = QTransform()
+        transform.scale(self.scale_factor, self.scale_factor)
+        painter.setTransform(transform)
         #отрисовка изменения типа линии
         if self.current_line_type=='Kochanek–Bartels':
             painter.drawPolyline(self.spline.get_curve())
@@ -39,13 +42,24 @@ class SplineView(QWidget):
         for index, knot in enumerate(self.spline.get_knots()):
             radius=6 if self.cur_knot_index==index else 4
             painter.drawEllipse(knot.pos, radius, radius)
-        
 
+        #отрисовка сетки
+        painter.setPen(QPen(QColor(curve_color), 1, Qt.DotLine)) 
+        cell_size = 50
+        cell_heught=int(self.height()/self.scale_factor)
+        cell_width=int(self.width()/self.scale_factor)
+        for x in range(0, cell_width, cell_size):
+            painter.drawLine(x, 0, x, cell_heught)
+        for y in range(0, cell_heught, cell_size):
+            painter.drawLine(0, y, cell_width, y)
 
         return super().paintEvent(event)
     
     def mousePressEvent(self, event:QMouseEvent):
-        index=self.spline.get_knot_by_pos(event.pos())
+        #учет изменения масштаба
+        scaled_pos = event.pos() / self.scale_factor
+
+        index = self.spline.get_knot_by_pos(scaled_pos)
         #Удаление узла при нажатии правой кнопки мыши
         if event.button()==Qt.RightButton:
             if index:
@@ -64,10 +78,10 @@ class SplineView(QWidget):
             #добавление нового узла после выбранного 
             else:
                 if  self.cur_knot_index<len(self.spline.get_knots())-1:
-                    self.spline.insert_knot(self.cur_knot_index+1, event.pos())
+                    self.spline.insert_knot(self.cur_knot_index+1, scaled_pos)
                     self.cur_knot_index+=1
                 else:
-                    self.spline.add_knot(event.pos())
+                    self.spline.add_knot(scaled_pos)
                     self.cur_knot_index=len(self.spline.get_knots())-1        
             
             
@@ -76,12 +90,14 @@ class SplineView(QWidget):
     
     #отработка удерживания левой кнопки мыши для перетаскивания узлов
     def mouseMoveEvent(self, event:QMouseEvent):
+        #учет изменения масштаба
+        scaled_pos = event.pos() / self.scale_factor
+
         if self.mouse_clicked and self.shift_clicked:
-            index=self.spline.get_knot_by_pos(event.pos())
+            index=self.spline.get_knot_by_pos(scaled_pos)
             if index:
-                self.spline.knots[index].pos=event.pos()
+                self.spline.knots[index].pos=scaled_pos
                 self.spline.interpolate()
-             
         self.update()
         return super().mouseMoveEvent(event)
     
@@ -125,4 +141,19 @@ class SplineView(QWidget):
     def redraw_changed_line(self, value: str):
         self.current_line_type=value
         self.paintEvent
+        self.update()
+
+    # Изменение масштаба при прокрутке колесика мыши
+    def wheelEvent(self, event):
+        if self.scale_factor < 0.2:
+            self.scale_factor = 0.2
+        elif self.scale_factor > 5.0:
+            self.scale_factor = 5.0
+        else:
+            if event.angleDelta().y() > 0:
+                self.scale_factor *= 1.1  
+            else:
+                self.scale_factor /= 1.1 
+        
+        self.scale_changed.emit(self.scale_factor)
         self.update()
