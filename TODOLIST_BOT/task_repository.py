@@ -1,5 +1,6 @@
 from db import tasks, engine
 from task import Task
+from sqlalchemy import or_
 
 from typing import List
 
@@ -10,6 +11,12 @@ class TaskRepository:
     
     def add_task(self, text: str):
         query = tasks.insert().values(text=text)
+        with engine.connect() as conn:
+            self.added_id=conn.execute(query).inserted_primary_key
+            conn.commit()
+    
+    def add_subtask(self, parent_id: int, text: str):
+        query = tasks.insert().values(parent_id=parent_id, text=text)
         with engine.connect() as conn:
             self.added_id=conn.execute(query).inserted_primary_key
             conn.commit()
@@ -31,8 +38,8 @@ class TaskRepository:
         result = []
         with engine.connect() as conn:
             result = [
-                Task(id=id, text=text, is_done=is_done)
-                for id, text, is_done in conn.execute(query.order_by(tasks.c.id))
+                Task(id=id, parent_id=parent_id, text=text, is_done=is_done)
+                for id, parent_id, text, is_done in conn.execute(query.order_by(tasks.c.parent_id, tasks.c.id))
             ]
 
         return result
@@ -54,7 +61,10 @@ class TaskRepository:
 
 
     def finish_tasks(self, ids: List[int]):
-        query = tasks.update().where(tasks.c.id.in_(ids)).values(is_done=True)
+        query = tasks.update().where(or_(
+            tasks.c.id.in_(ids),        
+            tasks.c.parent_id.in_(ids)  
+        )).values(is_done=True)
         with engine.connect() as conn:
             conn.execute(query)
             conn.commit()

@@ -4,6 +4,7 @@ from dataclasses import dataclass
 @dataclass
 class Task:
     id: int
+    parent_id: int 
     text: str = ""
     is_done: bool = False
 
